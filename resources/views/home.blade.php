@@ -14,7 +14,8 @@
                         </div>
                     @endif
 
-                    You are logged in!
+                    <li><a href="{{route('company_index')}}">Companies Index</a></li>
+                    <li><a href="{{route('company_index')}}">Employees Index</a></li>
                 </div>
             </div>
         </div>

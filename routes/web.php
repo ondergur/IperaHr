@@ -12,12 +12,15 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
+});
+
+Route::group(['middleware' => ['auth']], function (){
+    Route::get('/home', 'HomeController@index')->name('home');
+    Route::get('/companies/','CompanyController@index')->name('company_index');
+    Route::get('/companies/getcompanies/', 'CompanyController@get_companies')->name('company_get_data');
 });
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/companies/','CompanyController@index')->name('company_index');
-Route::get('/companies/getcompanies/', 'CompanyController@get_companies')->name('company_get_data');
