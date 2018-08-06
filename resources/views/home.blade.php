@@ -14,8 +14,8 @@
                         </div>
                     @endif
 
-                    <li><a href="{{route('company_index')}}">Companies Index</a></li>
-                    <li><a href="{{route('company_index')}}">Employees Index</a></li>
+                    <li><a href="{{route('companies.index')}}">Companies Index</a></li>
+                    <li><a href="{{route('companies.index')}}">Employees Index</a></li>
                 </div>
             </div>
         </div>

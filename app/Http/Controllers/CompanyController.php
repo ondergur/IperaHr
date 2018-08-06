@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Company;
+use App\Http\Requests\CompanyFormRequest;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -30,7 +31,7 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        //
+        return $this->form(new Company);
     }
 
     /**
@@ -39,9 +40,10 @@ class CompanyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CompanyFormRequest $request)
     {
-        //
+        $this->saveCompany($request, new Company);
+        return redirect(route('companies.index'));
     }
 
     /**
@@ -63,7 +65,7 @@ class CompanyController extends Controller
      */
     public function edit(Company $company)
     {
-        //
+        return $this->form($company);
     }
 
     /**
@@ -73,9 +75,10 @@ class CompanyController extends Controller
      * @param  \App\Company  $company
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Company $company)
+    public function update(CompanyFormRequest $request, Company $company)
     {
-        //
+        $this->saveCompany($request, $company);
+        return redirect(route('companies.index'));
     }
 
     /**
@@ -88,4 +91,25 @@ class CompanyController extends Controller
     {
         //
     }
+
+    private function form(Company $company){
+        if ($company->exists) {
+            $route = ['companies.update', $company->id];
+            $method = 'put';
+        } else {
+            $route = ['companies.store'];
+            $method = 'post';
+        }
+
+        return view('company.form', compact('company', 'route', 'method'));
+    }
+
+    private function saveCompany(Request $request, Company $company)
+    {
+        $attributes = $request->all();
+        $company->fill($attributes);
+        $company->save();
+        return $company;
+    }
+
 }
