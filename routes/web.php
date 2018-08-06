@@ -18,4 +18,6 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
 Route::get('/companies/','CompanyController@index')->name('company_index');
+Route::get('/companies/getcompanies/', 'CompanyController@get_companies')->name('company_get_data');
