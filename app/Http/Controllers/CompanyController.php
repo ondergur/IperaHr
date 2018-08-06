@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Company;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class CompanyController extends Controller
 {
@@ -17,6 +18,11 @@ class CompanyController extends Controller
         return view('company.index');
     }
 
+    public function get_companies()
+    {
+        $companies = Company::select(['id', 'name', 'address', 'phone', 'email', 'website']);
+        return DataTables::of($companies)->make();
+    }
     /**
      * Show the form for creating a new resource.
      *
