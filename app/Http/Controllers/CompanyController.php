@@ -6,6 +6,7 @@ use App\Company;
 use App\Http\Requests\CompanyFormRequest;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Form;
 
 class CompanyController extends Controller
 {
@@ -24,7 +25,10 @@ class CompanyController extends Controller
         $companies = Company::select(['id', 'name', 'address', 'phone', 'email', 'website']);
         return DataTables::of($companies)
             ->addColumn('actions', function ($company) {
-                return '<a href="'.route('companies.edit', $company).'" class=" btn btn-xs btn-primary"> Edit</a>';
+                return '<a href="'.route('companies.edit', $company).'" class=" btn btn-xs btn-primary"> Edit</a>'.
+                    Form::open([ 'method' => 'delete', 'route' => ['companies.destroy', $company]]).
+                    Form::button('Delete', ['type' => 'submit', 'class' => 'btn btn-xs btn-danger']).
+                    Form::close();
             })
             ->rawColumns(['actions'])
             ->make();
@@ -94,7 +98,8 @@ class CompanyController extends Controller
      */
     public function destroy(Company $company)
     {
-        //
+        $company->delete();
+        return redirect()->route('companies.index');
     }
 
     private function form(Company $company){
