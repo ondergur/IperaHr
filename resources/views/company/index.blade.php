@@ -17,6 +17,7 @@
                 <th scope="col">Phone</th>
                 <th scope="col">E-mail</th>
                 <th scope="col">Website</th>
+                <th scope="col">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -44,6 +45,7 @@
                     {data: 'phone', name: 'phone'},
                     {data: 'email', name: 'email'},
                     {data: 'website', name: 'website'},
+                    {data: 'actions', name: 'actions', orderable:false, searchable:false}
                 ]
             });
         });

@@ -22,7 +22,12 @@ class CompanyController extends Controller
     public function get_companies()
     {
         $companies = Company::select(['id', 'name', 'address', 'phone', 'email', 'website']);
-        return DataTables::of($companies)->make();
+        return DataTables::of($companies)
+            ->addColumn('actions', function ($company) {
+                return '<a href="'.route('companies.edit', $company).'" class=" btn btn-xs btn-primary"> Edit</a>';
+            })
+            ->rawColumns(['actions'])
+            ->make();
     }
     /**
      * Show the form for creating a new resource.
