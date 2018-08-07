@@ -20,6 +20,10 @@ Route::group(['middleware' => ['auth']], function (){
     
     Route::get('/companies/getcompanies/', 'CompanyController@get_companies')->name('company_get_data');
     Route::resource('companies', 'CompanyController');
+
+
+    Route::get('/employees/getemployees/', 'EmployeeController@get_employee_data')->name('employee_get_data');
+    Route::resource('employees', 'EmployeeController');
 });
 
 Auth::routes();
