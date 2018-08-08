@@ -6,6 +6,7 @@
 
 @section('content')
     <div class="container">
+        <a href="{{route('companies.index')}}"> <-- Back to Companies Index Page</a>
         <h1>Branches of {{$company->name}} Company</h1>
 
         <table id="branches_table" class="table">

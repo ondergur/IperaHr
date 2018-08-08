@@ -25,14 +25,20 @@ class CompanyController extends Controller
         $companies = Company::select(['id', 'name', 'address', 'phone', 'email', 'website']);
         return DataTables::of($companies)
             ->addColumn('actions', function ($company) {
-                return '<a href="'.route('companies.edit', $company).'" class=" btn btn-xs btn-primary"> Edit</a>'.
-                    Form::open([ 'method' => 'delete', 'route' => ['companies.destroy', $company]]).
-                    Form::button('Delete', ['type' => 'submit', 'class' => 'btn btn-xs btn-danger']).
+                return
+                    Form::open(['method' => 'delete', 'route' => ['companies.destroy', $company]]) .
+                    '<a href="' . route('companies.edit', $company) . '" class=" btn btn-xs btn-primary"> Edit</a>' .
+                    Form::button('Delete', ['type' => 'submit', 'class' => 'btn btn-xs btn-danger']) .
                     Form::close();
             })
-            ->rawColumns(['actions'])
+            ->editColumn('name', function ($company) {
+                return
+                    '<a href="' . route('branches.index', $company) . '">' . $company->name . '</a>' ;
+            })
+            ->rawColumns(['actions', 'name'])
             ->make();
     }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -46,7 +52,7 @@ class CompanyController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(CompanyFormRequest $request)
@@ -58,7 +64,7 @@ class CompanyController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Company  $company
+     * @param  \App\Company $company
      * @return \Illuminate\Http\Response
      */
     public function show(Company $company)
@@ -69,7 +75,7 @@ class CompanyController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Company  $company
+     * @param  \App\Company $company
      * @return \Illuminate\Http\Response
      */
     public function edit(Company $company)
@@ -80,8 +86,8 @@ class CompanyController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Company  $company
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Company $company
      * @return \Illuminate\Http\Response
      */
     public function update(CompanyFormRequest $request, Company $company)
@@ -93,7 +99,7 @@ class CompanyController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Company  $company
+     * @param  \App\Company $company
      * @return \Illuminate\Http\Response
      */
     public function destroy(Company $company)
@@ -102,7 +108,8 @@ class CompanyController extends Controller
         return redirect()->route('companies.index');
     }
 
-    private function form(Company $company){
+    private function form(Company $company)
+    {
         if ($company->exists) {
             $route = ['companies.update', $company->id];
             $method = 'put';
