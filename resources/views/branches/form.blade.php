@@ -4,7 +4,7 @@
     <div class="container">
 
         @if($branch->exists)
-            <h1 class="text-center">Edit {{$branch->company->name}}'s {{$branch->name}}</h1>
+            <h1 class="text-center">Edit {{$branch->company->name}}'s {{$branch->name}} Branch</h1>
         @else
             <h1 class="text-center">Create New Branch</h1>
         @endif
