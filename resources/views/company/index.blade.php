@@ -7,7 +7,26 @@
 @section('content')
     <div class="container">
         <h1>Companies Index Page</h1>
-
+        {{Form::open(['route' => 'companies.index', 'method' => 'GET', 'id' => 'company_filter']) }}
+        <div class="row justify-content-between">
+            <div class="col-md">
+                {{Form::text('name', request('name') , ['class' => 'form-control', 'placeholder' => 'Filter Name'])}}
+            </div>
+            <div class="col-md">
+                {{Form::text('address', request('address') , ['class' => 'form-control', 'placeholder' => 'Filter Address'])}}
+            </div>
+            <div class="col-md">
+                {{Form::text('phone', request('phone') , ['class' => 'form-control', 'placeholder' => 'Filter Phone'])}}
+            </div>
+            <div class="col-md">
+                {{Form::text('email', request('email') , ['class' => 'form-control', 'placeholder' => 'Filter E-mail'])}}
+            </div>
+            <div class="col-md">
+                {{Form::text('website', request('website') , ['class' => 'form-control', 'placeholder' => 'Filter Website'])}}
+            </div>
+            {{Form::submit('Filter', ['class' => 'btn btn-success my-2 my-sm-0'])}}
+            {{Form::close()}}
+        </div>
         <table id="company_index_table" class="table">
             <thead>
             <tr>
@@ -34,10 +53,21 @@
 
     <script>
         $(function () {
-            $('#company_index_table').DataTable({
+            var cTable = $('#company_index_table').DataTable({
+
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('company_get_data') }}',
+                searching: false,
+                ajax: {
+                    url: '{{ route('company_get_data') }}',
+                    data: function (d) {
+                        d.name = $('input[name=name]').val();
+                        d.address = $('input[name=address]').val();
+                        d.phone = $('input[name=phone]').val();
+                        d.email = $('input[name=email]').val();
+                        d.website = $('input[name=website]').val();
+                    }
+                },
                 columns: [
                     {data: 'id', name: 'id'},
                     {data: 'name', name: 'name'},
@@ -45,7 +75,7 @@
                     {data: 'phone', name: 'phone'},
                     {data: 'email', name: 'email'},
                     {data: 'website', name: 'website'},
-                    {data: 'actions', name: 'actions', orderable:false, searchable:false}
+                    {data: 'actions', name: 'actions', orderable: false, searchable: false}
                 ]
             });
         });

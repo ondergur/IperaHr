@@ -20,10 +20,27 @@ class CompanyController extends Controller
         return view('company.index');
     }
 
-    public function get_companies()
+    public function get_companies(Request $request)
     {
         $companies = Company::select(['id', 'name', 'address', 'phone', 'email', 'website']);
         return DataTables::of($companies)
+            ->filter(function ($query) use ($request){
+                if ($request->has('name')){
+                    $query->where('name', 'like', "%{$request->get('name')}%");
+                }
+                if ($request->has('address')){
+                    $query->where('address', 'like', "%{$request->get('address')}%");
+                }
+                if ($request->has('phone')){
+                    $query->where('phone', 'like', "%{$request->get('phone')}%");
+                }
+                if ($request->has('email')){
+                    $query->where('email', 'like', "%{$request->get('email')}%");
+                }
+                if ($request->has('website')){
+                    $query->where('website', 'like', "%{$request->get('website')}%");
+                }
+            })
             ->addColumn('actions', function ($company) {
                 return
                     Form::open(['method' => 'delete', 'route' => ['companies.destroy', $company]]) .
@@ -52,7 +69,7 @@ class CompanyController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param CompanyFormRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(CompanyFormRequest $request)
@@ -86,7 +103,7 @@ class CompanyController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param CompanyFormRequest $request
      * @param  \App\Company $company
      * @return \Illuminate\Http\Response
      */
@@ -101,6 +118,7 @@ class CompanyController extends Controller
      *
      * @param  \App\Company $company
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function destroy(Company $company)
     {

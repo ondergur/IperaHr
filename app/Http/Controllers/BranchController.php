@@ -23,10 +23,18 @@ class BranchController extends Controller
         return view('branches.index', compact('company'));
     }
 
-    public function get_branches($id)
+    public function get_branches(Request $request, $id)
     {
         $branches = Branch::where('company_id', '=', $id);
         return DataTables::of($branches)
+            ->filter(function ($query) use ($request) {
+                if ($request->has('name')) {
+                    $query->where('name', 'like', "%{$request->get('name')}%");
+                }
+                if ($request->has('address')) {
+                    $query->where('address', 'like', "%{$request->get('address')}%");
+                }
+            })
             ->addColumn('actions', function ($branch) {
                 return
                     Form::open([ 'method' => 'delete', 'route' => ['branches.destroy', $branch]]).
