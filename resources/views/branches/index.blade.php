@@ -11,10 +11,10 @@
         {{Form::open(['route' => ['branches.index', $company], 'method' => 'GET', 'id' => 'branches_filter']) }}
         <div class="row justify-content-between">
             <div class="col-md">
-                {{Form::text('name', request('name') , ['class' => 'form-control', 'placeholder' => 'Filter Name'])}}
+                {{Form::text('name', request('name') , ['class' => 'form-control', 'placeholder' => 'Filter by Name'])}}
             </div>
             <div class="col-md">
-                {{Form::text('address', request('address') , ['class' => 'form-control', 'placeholder' => 'Filter Address'])}}
+                {{Form::text('address', request('address') , ['class' => 'form-control', 'placeholder' => 'Filter by Address'])}}
             </div>
             {{Form::submit('Filter', ['class' => 'btn btn-success my-2 my-sm-0'])}}
             {{Form::close()}}

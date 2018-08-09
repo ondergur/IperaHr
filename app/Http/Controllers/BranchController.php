@@ -42,7 +42,11 @@ class BranchController extends Controller
                     Form::button('Delete', ['type' => 'submit', 'class' => 'btn btn-xs btn-danger']).
                     Form::close();
             })
-            ->rawColumns(['actions'])
+            ->editColumn('name', function ($branch) {
+                return
+                    '<a href="' . route('departments.index', $branch) . '">' . $branch->name . '</a>' ;
+            })
+            ->rawColumns(['actions', 'name'])
             ->make();
     }
 
@@ -59,7 +63,7 @@ class BranchController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param BranchFormRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(BranchFormRequest $request)
