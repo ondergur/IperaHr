@@ -17,6 +17,7 @@ class CreateDepartmentsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('branch_id');
             $table->foreign('branch_id')->references('id')->on('branches');
+            $table->string('name');
             $table->timestamps();
         });
     }
