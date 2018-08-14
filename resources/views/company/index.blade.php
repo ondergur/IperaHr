@@ -6,7 +6,14 @@
 
 @section('content')
     <div class="container">
-        <h1>Companies Index Page</h1>
+        <div class="row">
+            <div class="col-md">
+                <h1>Companies Index Page</h1>
+            </div>
+            <div class="col-md">
+                <a href="{{route('companies.create')}}" class="btn btn-success float-right">Create New Company</a>
+            </div>
+        </div>
         {{Form::open(['route' => 'companies.index', 'method' => 'GET', 'id' => 'company_filter']) }}
         <div class="row justify-content-between">
             <div class="col-md">
@@ -79,6 +86,11 @@
                     {data: 'actions', name: 'actions', orderable: false, searchable: false}
                 ]
             });
+        });
+
+        $('#company_filter').on('submit', function (e) {
+            cTable.draw();
+            e.preventDefault();
         });
     </script>
 @endpush

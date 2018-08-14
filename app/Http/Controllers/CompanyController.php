@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Company;
 use App\Http\Requests\CompanyFormRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Form;
 
@@ -20,24 +21,29 @@ class CompanyController extends Controller
         return view('company.index');
     }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws \Exception
+     */
     public function get_companies(Request $request)
     {
         $companies = Company::select(['id', 'name', 'address', 'phone', 'email', 'website']);
         return DataTables::of($companies)
-            ->filter(function ($query) use ($request){
-                if ($request->has('name')){
+            ->filter(function ($query) use ($request) {
+                if ($request->filled('name')) {
                     $query->where('name', 'like', "%{$request->get('name')}%");
                 }
-                if ($request->has('address')){
+                if ($request->filled('address')) {
                     $query->where('address', 'like', "%{$request->get('address')}%");
                 }
-                if ($request->has('phone')){
+                if ($request->filled('phone')) {
                     $query->where('phone', 'like', "%{$request->get('phone')}%");
                 }
-                if ($request->has('email')){
+                if ($request->filled('email')) {
                     $query->where('email', 'like', "%{$request->get('email')}%");
                 }
-                if ($request->has('website')){
+                if ($request->filled('website')) {
                     $query->where('website', 'like', "%{$request->get('website')}%");
                 }
             })
@@ -50,7 +56,7 @@ class CompanyController extends Controller
             })
             ->editColumn('name', function ($company) {
                 return
-                    '<a href="' . route('branches.index', $company) . '">' . $company->name . '</a>' ;
+                    '<a href="' . route('branches.index', $company) . '">' . $company->name . '</a>';
             })
             ->rawColumns(['actions', 'name'])
             ->make();
@@ -82,7 +88,7 @@ class CompanyController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Company $company
-     * @return \Illuminate\Http\Response
+     * @return void
      */
     public function show(Company $company)
     {
