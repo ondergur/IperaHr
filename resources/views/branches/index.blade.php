@@ -7,7 +7,15 @@
 @section('content')
     <div class="container">
         <a href="{{route('companies.index')}}"> <-- Back to Companies Index Page</a>
-        <h1>Branches of {{$company->name}} Company</h1>
+        <div class="row">
+            <div class="col-md-8">
+                <h1>Branches of {{$company->name}} Company</h1>
+            </div>
+            <div class="col-md">
+                <a href="{{route('branches.create', $company)}}" class="btn btn-success float-right">Create New Branch
+                    for {{$company->name}}</a>
+            </div>
+        </div>
         {{Form::open(['route' => ['branches.index', $company], 'method' => 'GET', 'id' => 'branches_filter']) }}
         <div class="row justify-content-between">
             <div class="col-md">
@@ -41,7 +49,7 @@
 
     <script>
         $(function () {
-            $('#branches_table').DataTable({
+            var bTable = $('#branches_table').DataTable({
                 processing: true,
                 serverSide: true,
                 searching: false,
@@ -59,6 +67,11 @@
                     {data: 'actions', name: 'actions', orderable: false, searchable: false}
                 ]
             });
+        });
+
+        $('#branches_filter').on('submit', function (e) {
+            bTable.draw();
+            e.preventDefault();
         });
     </script>
 @endpush

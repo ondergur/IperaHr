@@ -23,28 +23,34 @@ class BranchController extends Controller
         return view('branches.index', compact('company'));
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     * @throws \Exception
+     */
     public function get_branches(Request $request, $id)
     {
         $branches = Branch::where('company_id', '=', $id);
         return DataTables::of($branches)
             ->filter(function ($query) use ($request) {
-                if ($request->has('name')) {
+                if ($request->filled('name')) {
                     $query->where('name', 'like', "%{$request->get('name')}%");
                 }
-                if ($request->has('address')) {
+                if ($request->filled('address')) {
                     $query->where('address', 'like', "%{$request->get('address')}%");
                 }
             })
             ->addColumn('actions', function ($branch) {
                 return
-                    Form::open([ 'method' => 'delete', 'route' => ['branches.destroy', $branch]]).
-                    '<a href="'.route('branches.edit', $branch).'" class=" btn btn-xs btn-primary">Edit</a>'.
-                    Form::button('Delete', ['type' => 'submit', 'class' => 'btn btn-xs btn-danger']).
+                    Form::open(['method' => 'delete', 'route' => ['branches.destroy', $branch]]) .
+                    '<a href="' . route('branches.edit', $branch) . '" class=" btn btn-xs btn-primary">Edit</a>' .
+                    Form::button('Delete', ['type' => 'submit', 'class' => 'btn btn-xs btn-danger']) .
                     Form::close();
             })
             ->editColumn('name', function ($branch) {
                 return
-                    '<a href="' . route('departments.index', $branch) . '">' . $branch->name . '</a>' ;
+                    '<a href="' . route('departments.index', $branch) . '">' . $branch->name . '</a>';
             })
             ->rawColumns(['actions', 'name'])
             ->make();
@@ -53,23 +59,25 @@ class BranchController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Company $company
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function create()
+    public function create(Company $company)
     {
-        return $this->form(new Branch);
+        return $this->form(new Branch, $company);
     }
 
     /**
      * Store a newly created resource in storage.
      *
+     * @param Company $company
      * @param BranchFormRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(BranchFormRequest $request)
+    public function store(Company $company, BranchFormRequest $request)
     {
         $this->saveBranch($request, new Branch);
-        return redirect(route('branches.index'));
+        return redirect(route('branches.index', $company));
     }
 
     /**
@@ -87,11 +95,11 @@ class BranchController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \App\Branch $branch
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(Branch $branch)
     {
-        return $this->form($branch);
+        return $this->form($branch, $branch->company);
     }
 
     /**
@@ -105,7 +113,7 @@ class BranchController extends Controller
     public function update(BranchFormRequest $request, Branch $branch)
     {
         $this->saveBranch($request, $branch);
-        return redirect(route('branches.index', $branch->company_id));
+        return redirect(route('branches.index', $branch->company));
     }
 
     /**
@@ -118,23 +126,32 @@ class BranchController extends Controller
     public function destroy(Branch $branch)
     {
         $branch->delete();
-        return redirect()->route('branches.index', $branch->company_id);
+        return redirect()->route('branches.index', $branch->company);
     }
 
-    private function form(Branch $branch)
+    /**
+     * @param Branch $branch
+     * @param Company $company
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    private function form(Branch $branch, Company $company)
     {
         if ($branch->exists) {
-            $route = ['branches.update', $branch->id];
+            $route = ['branches.update', $branch];
             $method = 'put';
         } else {
-            $route = ['branches.store'];
+            $route = ['branches.store', $company];
             $method = 'post';
         }
 
-        $company_names = DB::table('companies')->pluck('name', 'id');
-        return view('branches.form', compact('branch', 'route', 'method', 'company_names'));
+        return view('branches.form', compact('branch', 'route', 'method', 'company'));
     }
 
+    /**
+     * @param Request $request
+     * @param Branch $branch
+     * @return Branch
+     */
     private function saveBranch(Request $request, Branch $branch)
     {
         $attributes = $request->all();
