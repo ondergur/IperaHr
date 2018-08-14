@@ -28,7 +28,7 @@ class DepartmentController extends Controller
         $departments = Department::where('branch_id', '=', $id);
         return DataTables::of($departments)
             ->filter(function ($query) use ($request) {
-                if ($request->has('name')) {
+                if ($request->filled('name')) {
                     $query->where('name', 'like', "%{$request->get('name')}%");
                 }
             })
@@ -39,30 +39,36 @@ class DepartmentController extends Controller
                     Form::button('Delete', ['type' => 'submit', 'class' => 'btn btn-xs btn-danger']).
                     Form::close();
             })
-            ->rawColumns(['actions'])
+            ->editColumn('name', function ($department) {
+                return
+                    '<a href="' . route('employees.index', $department) . '">' . $department->name . '</a>';
+            })
+            ->rawColumns(['actions','name'])
             ->make();
     }
 
     /**
      * Show the form for creating a new resource.
      *
+     * @param Branch $branch
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Branch $branch)
     {
-        return $this->form(new Department);
+        return $this->form(new Department, $branch);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Branch $branch
+     * @param DepartmentFormRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(DepartmentFormRequest $request)
+    public function store(Branch $branch, DepartmentFormRequest $request)
     {
-        $this->saveBranch($request, new Department);
-        return redirect(route('departments.index'));
+        $this->saveDepartment($request, new Department);
+        return redirect(route('departments.index', $branch));
     }
 
     /**
@@ -84,14 +90,14 @@ class DepartmentController extends Controller
      */
     public function edit(Department $department)
     {
-        return $this->form($department);
+        return $this->form($department,$department->branch);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Department  $department
+     * @param DepartmentFormRequest $request
+     * @param  \App\Department $department
      * @return \Illuminate\Http\Response
      */
     public function update(DepartmentFormRequest $request, Department $department)
@@ -103,8 +109,9 @@ class DepartmentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Department  $department
+     * @param  \App\Department $department
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function destroy(Department $department)
     {
@@ -112,17 +119,25 @@ class DepartmentController extends Controller
         return redirect()->route('departments.index', $department->branch_id);
     }
 
-    private function form(Department $department)
+    private function form(Department $department, Branch $branch)
     {
         if ($department->exists) {
-            $route = ['departments.update', $department->id];
+            $route = ['departments.update', $department];
             $method = 'put';
         } else {
-            $route = ['department.store'];
+            $route = ['departments.store', $branch];
             $method = 'post';
         }
 
         $branch_names = DB::table('branches')->pluck('name', 'id');
-        return view('departments.form', compact('department', 'route', 'method', 'branch_names'));
+        return view('departments.form', compact('department', 'route', 'method', 'branch_names', 'branch'));
+    }
+
+    private function saveDepartment(Request $request, Department $department)
+    {
+        $attributes = $request->all();
+        $department->fill($attributes);
+        $department->save();
+        return $department;
     }
 }

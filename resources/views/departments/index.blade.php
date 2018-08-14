@@ -6,8 +6,17 @@
 
 @section('content')
     <div class="container">
-        <a href="{{route('branches.index', $branch->company)}}"> <-- Back to {{$branch->company->name}}'s {{$branch->name}} Branch Index Page</a>
-        <h1>Departments of {{$branch->company->name}}'s {{$branch->name}} Branch </h1>
+        <a href="{{route('branches.index', $branch->company)}}"> <-- Back to {{$branch->company->name}}
+            's {{$branch->name}} Branch Index Page</a>
+        <div class="row">
+            <div class="col-md-7">
+                <h1>Departments of {{$branch->company->name}}'s {{$branch->name}} Branch </h1>
+            </div>
+            <div class="col-md">
+                <a href="{{route('departments.create', $branch)}}" class="btn btn-success float-right">Create New
+                    Department for {{$branch->name}}</a>
+            </div>
+        </div>
         {{Form::open(['route' => ['departments.index', $branch], 'method' => 'GET', 'id' => 'departments_filter']) }}
         <div class="row justify-content-between">
             <div class="col-md">
